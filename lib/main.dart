@@ -55,7 +55,6 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         fcmToken = value;
       });
-      print("FCM Token: $fcmToken");
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage event) {
