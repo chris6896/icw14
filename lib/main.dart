@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Import for clipboard functionality
+import 'package:flutter/services.dart';
 import 'firebase_options.dart';
 
 Future<void> _messageHandler(RemoteMessage message) async {
@@ -49,25 +49,24 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     messaging = FirebaseMessaging.instance;
 
-    // Subscribe to a topic
     messaging.subscribeToTopic("messaging");
 
-    // Get the FCM token
     messaging.getToken().then((value) {
       setState(() {
         fcmToken = value;
       });
-      print("FCM Token: $fcmToken"); // Print or store this token as needed
+      print("FCM Token: $fcmToken");
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage event) {
-      print("Message received");
-      print(event.notification!.body);
-      print(event.data.values);
+      final notificationType = event.data['notification_type'];
+      Color bgColor = notificationType == 'important' ? Colors.red : Colors.green;
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
+            backgroundColor: bgColor,
             title: Text("Notification"),
             content: Text(event.notification!.body!),
             actions: [
@@ -88,7 +87,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  // Method to copy token to clipboard
   void _copyToClipboard() {
     if (fcmToken != null) {
       Clipboard.setData(ClipboardData(text: fcmToken!)).then((_) {
